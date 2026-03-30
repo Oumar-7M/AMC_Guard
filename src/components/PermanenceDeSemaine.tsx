@@ -7,6 +7,7 @@ import { usePermanenceSemaine } from "@/hooks/usePermanenceSemaine";
 import PermanenceSemaineCard from "./PermanenceSemaineCard";
 import DateSearchWithSubmit from "./user-interface/DateSearchWithSubmit";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+import { formatDateFR } from "@/utils/formatDate";
 
 export default function PermanenceDeSemaine() {
   const searchParams = useSearchParams();
@@ -77,11 +78,11 @@ export default function PermanenceDeSemaine() {
             <div className="text-sm">
               <p>
                 <span className="font-semibold">Début :</span>{" "}
-                {affichageData.debutPermanence}
+                {formatDateFR(affichageData.debutPermanence)}
               </p>
               <p>
                 <span className="font-semibold">Fin :</span>{" "}
-                {affichageData.finPermanence}
+                {formatDateFR(affichageData.finPermanence)}
               </p>
             </div>
 

@@ -2,6 +2,7 @@
 "use client";
 
 import { PermanenceEnCour } from "@/types/permanence";
+import { formatDateFR } from "@/utils/formatDate";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 type Props = {
@@ -54,7 +55,7 @@ export default function PermanenceCard({ permanence }: Props) {
           <div className="flex flex-wrap gap-2 text-sm">
 
             <span className="badge badge-outline"><CalendarDaysIcon className="w-5 h-5 text-primary" />
-              {permanence.jours.date}
+            {formatDateFR(permanence.jours.date)}
             </span>
           </div>
         </div>
@@ -68,8 +69,8 @@ export default function PermanenceCard({ permanence }: Props) {
       {/* ================= INFOS ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
         <div className="space-y-1">
-          <p><span className="font-semibold">Début :</span> {permanence.DebutPermanence}</p>
-          <p><span className="font-semibold">Fin :</span> {permanence.FinPermanence}</p>
+          <p><span className="font-semibold">Début :</span> {formatDateFR(permanence.DebutPermanence)}</p>
+          <p><span className="font-semibold">Fin :</span> {formatDateFR(permanence.FinPermanence)}</p>
         </div>
         <div className="space-y-1">
           <p><span className="font-semibold">Description :</span></p>
@@ -129,8 +130,8 @@ export default function PermanenceCard({ permanence }: Props) {
                   <span className="badge badge-info badge-sm">{p.role}</span>
                 </td>
                 <td>{p.jourSemaine}</td>
-                <td>{p.DateDebut}</td>
-                <td>{p.DateFin}</td>
+                <td>{formatDateFR(p.DateDebut)}</td>
+                <td>{formatDateFR(p.DateFin)}</td>
                 <td>
                   {p.estWeekend ? (
                     <span className="badge badge-warning badge-sm">Oui</span>
@@ -179,8 +180,8 @@ export default function PermanenceCard({ permanence }: Props) {
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>Début: {p.DateDebut}</span>
-              <span>Fin: {p.DateFin}</span>
+              <span>Début: {formatDateFR(p.DateDebut)}</span>
+              <span>Fin: {formatDateFR(p.DateFin)}</span>
               <span>
                 Weekend:{" "}
                 {p.estWeekend ? "Oui" : "Non"}

@@ -47,7 +47,7 @@ export default function PermanencePrecise() {
         </h1>
 
         <p className="text-sm text-base-content/70">
-          Rechercher une permanence par date ou par rôle.
+        Rechercher une permanence par date ou filtrez par rôle.
         </p>
       </div>
 
@@ -61,15 +61,17 @@ export default function PermanencePrecise() {
         loading={loading}
       />
 
-      {affichageError && (
-        <p className="text-red-500">{affichageError}</p>
-      )}
+{affichageError && (
+  <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100">
+    {affichageError}
+  </div>
+)}
 
       {/* AVANT RECHERCHE */}
       {!searchDate && (
         <div className="border border-dashed rounded-2xl p-10 text-center text-base-content/60">
           <CalendarDaysIcon className="w-10 h-10 mx-auto mb-3 opacity-40" />
-          <p>Sélectionnez une date pour afficher la permanence.</p>
+          <p>Sélectionnez une date pour afficher la permanence, ou ajoutez un rôle pour cibler une personne précise.</p>
         </div>
       )}
 

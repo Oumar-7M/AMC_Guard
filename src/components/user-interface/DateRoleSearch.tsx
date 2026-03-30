@@ -12,10 +12,16 @@ type Props = {
 };
 
 const roles = [
-  "Grand_Semaine",
-  "Chef_Regiment",
-  "Chef_Section",
-  "Garde",
+  "GRANDE_SEMAINE",
+  "GRAND_JOUR",
+  "CHEF_REGIMENT",
+  "CHEF_SECTION",
+  "CHEF_POSTE1",
+  "CHEF_POSTE2",
+  "CHEF_POSTE3",
+  "CHEF_POSTE4",
+  "CHEF_POSTE5",
+  "SENTINELLE",
 ];
 
 export default function DateRoleSearch({
@@ -48,7 +54,7 @@ export default function DateRoleSearch({
         onChange={(e) => onRoleChange(e.target.value)}
         className="select select-bordered rounded-xl"
       >
-        <option value="">Sélectionner un rôle</option>
+        <option value="">Sélectionner aussi un rôle</option>
 
         {roles.map((r) => (
           <option key={r} value={r}>

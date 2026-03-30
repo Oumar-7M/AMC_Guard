@@ -7,6 +7,7 @@ export interface CreatePermanencePayload {
 export interface UpdatePermanenceIndispoPayload {
   dateJour: string;
   matriculeIndispo: string;
+  motifIndispo: string;
 }
 
 // Cas 2 : retour (re-disponible)

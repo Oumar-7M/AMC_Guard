@@ -5,6 +5,7 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCheckMyPermanence } from "@/hooks/useCheckMyPermanence";
+import { formatDateFR } from "@/utils/formatDate";
 
 interface Props {
   matricule: string;
@@ -44,7 +45,6 @@ export default function CheckMyPermanenceDetails({
       roleEquipe: "Soldat",
     })),
   ];
-  ;
   return (
     <section className="mt-8 bg-white shadow rounded-lg p-6 space-y-6">
 
@@ -67,9 +67,9 @@ export default function CheckMyPermanenceDetails({
           {/* INFOS PERMANENCE */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
             <div className="space-y-1">
-              <p><span className="font-semibold">Date :</span> {permanence.date}</p>
-              <p><span className="font-semibold">Début :</span> {permanence.debut}</p>
-              <p><span className="font-semibold">Fin :</span> {permanence.fin}</p>
+              <p><span className="font-semibold">Date :</span> {formatDateFR(permanence.date)}</p>
+              <p><span className="font-semibold">Début :</span> {formatDateFR(permanence.debut)}</p>
+              <p><span className="font-semibold">Fin :</span> {formatDateFR(permanence.fin)}</p>
             </div>
 
             <div className="space-y-1">

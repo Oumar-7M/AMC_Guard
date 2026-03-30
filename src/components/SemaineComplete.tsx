@@ -5,6 +5,8 @@ import { useState } from "react";
 import { usePermanenceSemaine } from "@/hooks/usePermanenceSemaine";
 import SemaineCompleteCard from "./SemaineCompleteCard";
 import PdfSignature from "./PdfSignature";
+import { motion, AnimatePresence } from "framer-motion";
+import { formatDateFR } from "@/utils/formatDate";
 
 interface Props {
   date?: string;
@@ -13,7 +15,9 @@ interface Props {
 export default function SemaineComplete({ date }: Props) {
 
   const { permanence, loading, error } = usePermanenceSemaine(date);
+
   const [mode, setMode] = useState<"officiel" | "signature">("officiel");
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const handlePrint = (type: "officiel" | "signature") => {
     setMode(type);
@@ -26,6 +30,8 @@ export default function SemaineComplete({ date }: Props) {
   if (loading) return <p>Chargement...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (!permanence) return <p>Aucune donnée.</p>;
+
+  const jours = permanence.jours;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -41,12 +47,12 @@ export default function SemaineComplete({ date }: Props) {
         </h1>
 
         <p className="text-sm mt-1">
-          Semaine du {permanence.debutPermanence} au {permanence.finPermanence}
+        Semaine du {formatDateFR(permanence.debutPermanence)} au {formatDateFR(permanence.finPermanence)}
         </p>
       </div>
 
       {/* BOUTONS PDF */}
-      <div className="flex justify-end gap-2 print:hidden mb-4">
+      <div className="flex justify-end gap-2 print:hidden mb-6">
 
         <button
           onClick={() => handlePrint("officiel")}
@@ -59,26 +65,78 @@ export default function SemaineComplete({ date }: Props) {
           onClick={() => handlePrint("signature")}
           className="btn btn-secondary"
         >
-          PDF avec signatures
+          PDF signatures
         </button>
 
       </div>
 
       {/* CONTENU */}
-      <div className="space-y-6">
-        {permanence.jours.map((jour) => (
+
+      {/* MODE NORMAL */}
+      <div className="print:hidden">
+
+        <AnimatePresence mode="wait">
+
+          <motion.div
+            key={jours[activeIndex].date}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.3 }}
+          >
+
+            <SemaineCompleteCard
+              jour={jours[activeIndex]}
+              mode={mode}
+            />
+
+          </motion.div>
+
+        </AnimatePresence>
+
+      </div>
+
+      {/* MODE PRINT → toute la semaine */}
+      <div className="hidden print:block">
+
+        {jours.map((jour) => (
           <SemaineCompleteCard
             key={jour.date}
             jour={jour}
             mode={mode}
           />
         ))}
+
+        {/* SIGNATURE UNIQUEMENT PDF */}
+        {mode === "officiel" && (
+          <div className="mt-16">
+            <PdfSignature titre="Le Chef de l'Académie" />
+          </div>
+        )}
+
       </div>
 
-      {/* SIGNATURE CHEF (SEULEMENT PDF OFFICIEL) */}
-      {mode === "officiel" && (
-        <PdfSignature titre="Le Chef de l'Académie" />
-      )}
+      {/* PAGINATION EN BAS */}
+      <div className="flex justify-center mt-8 gap-2 print:hidden">
+
+        {jours.map((jour, index) => (
+
+          <button
+            key={jour.date}
+            onClick={() => setActiveIndex(index)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium border transition
+            ${
+              activeIndex === index
+                ? "bg-slate-800 text-white"
+                : "bg-white text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            {index + 1}
+          </button>
+
+        ))}
+
+      </div>
 
     </div>
   );

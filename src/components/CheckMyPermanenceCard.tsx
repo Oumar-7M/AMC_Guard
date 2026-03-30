@@ -1,6 +1,7 @@
 //src\components\CheckMyPermanenceCard.tsx
 import Link from "next/link";
 import { PermanenceCheck } from "@/types/permanence";
+import { formatDateFR } from "@/utils/formatDate";
 
 export default function CheckMyPermanenceCard({
   permanence,
@@ -16,9 +17,9 @@ export default function CheckMyPermanenceCard({
     >
       <div className="flex justify-between items-center">
         <div>
-          <p className="font-semibold">{permanence.date}</p>
+          <p className="font-semibold">{formatDateFR(permanence.date)}</p>
           <p className="text-sm text-base-content/70">
-            {permanence.debut} – {permanence.fin}
+          {formatDateFR(permanence.debut)} –     {formatDateFR(permanence.fin)}
           </p>
           <p className="text-sm">
             Équipe :{" "}

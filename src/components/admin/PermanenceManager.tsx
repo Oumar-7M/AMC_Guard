@@ -5,7 +5,13 @@ import { useAuth } from "@/context/AuthContext";
 import { createPermanence, updatePermanence } from "@/services/permanenceService";
 import DateSearchWithSubmit from "../user-interface/DateSearchWithSubmit";
 
-export default function PermanenceManager() {
+const motifs = [
+  "Malade",
+  "Congés",
+];
+
+export default function PermanenceManager(
+) {
   const { token } = useAuth();
 
   // ================= CREATE =================
@@ -15,6 +21,7 @@ export default function PermanenceManager() {
   // ================= REMPLACER =================
   const [dateJour, setDateJour] = useState("");
   const [matriculeIndispo, setMatriculeIndispo] = useState("");
+  const [motifIndispo, setMotifIndispo] = useState("");
   const [loadingReplace, setLoadingReplace] = useState(false);
 
   // ================= RETOUR =================
@@ -63,6 +70,7 @@ export default function PermanenceManager() {
         {
           dateJour,
           matriculeIndispo,
+          motifIndispo,
         },
         token
       );
@@ -143,6 +151,20 @@ export default function PermanenceManager() {
           onChange={(e) => setMatriculeIndispo(e.target.value)}
           placeholder="Matricule indisponible"
         />
+        {/* ROLE SELECT */}
+      <select
+        value={motifIndispo}
+        onChange={(e) => setMotifIndispo(e.target.value)}
+        className="select select-bordered rounded-xl"
+      >
+        <option value="">Sélectionner un motif</option>
+
+        {motifs.map((r) => (
+          <option key={r} value={r}>
+            {r}
+          </option>
+        ))}
+      </select>
 
         <button
           className="btn btn-warning w-full"

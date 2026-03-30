@@ -2,6 +2,7 @@
 "use client";
 
 import { usePermanenceSemaine } from "@/hooks/usePermanenceSemaine";
+import { formatDateFR } from "@/utils/formatDate";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -38,7 +39,7 @@ export default function PermanenceJourSemaineDetails({
           Académie — Militaire — Cherchell
         </p>
       <h1 className="text-2xl font-bold">
-        Permanence du {jour.date}
+        Permanence du {formatDateFR(jour.date)}
       </h1>
 
       <p className="text-sm text-gray-600">
@@ -110,8 +111,8 @@ export default function PermanenceJourSemaineDetails({
                   <span className="badge badge-info badge-sm">{p.role}</span>
                 </td>
                 <td>{p.jourSemaine}</td>
-                <td>{p.DateDebut}</td>
-                <td>{p.DateFin}</td>
+                <td>{formatDateFR(p.DateDebut)}</td>
+                <td>{formatDateFR(p.DateFin)}</td>
                 <td>
                   {p.estWeekend ? (
                     <span className="badge badge-warning badge-sm">Oui</span>
@@ -160,8 +161,8 @@ export default function PermanenceJourSemaineDetails({
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>Début: {p.DateDebut}</span>
-              <span>Fin: {p.DateFin}</span>
+              <span>Début: {formatDateFR(p.DateDebut)}</span>
+              <span>Fin: {formatDateFR(p.DateFin)}</span>
               <span>
                 Weekend:{" "}
                 {p.estWeekend ? "Oui" : "Non"}

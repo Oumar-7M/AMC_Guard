@@ -22,7 +22,7 @@ export default function Dashboard() {
       icon: CalendarDaysIcon,
     },
     {
-      name: "Permanences d'un matricule",
+      name: "Permanences d'un personnel",
       description:
         "Saisissez un matricule pour consulter toutes les permanences associées à ce personnel",
       href: "/dashboard/check-my-permanence",

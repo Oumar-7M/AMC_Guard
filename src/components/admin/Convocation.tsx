@@ -1,4 +1,4 @@
-//src\components\admin\Convocation.tsx
+// src/components/admin/Convocation.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,6 +8,8 @@ import { useConvocationPermanence } from "@/hooks/useConvocationPermanence";
 import DateSearchWithSubmit from "../user-interface/DateSearchWithSubmit";
 import ConvocationCard from "./ConvocationCard";
 import PdfSignature from "../PdfSignature";
+import { formatDateFR } from "@/utils/formatDate";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Convocation() {
   const searchParams = useSearchParams();
@@ -15,12 +17,11 @@ export default function Convocation() {
 
   const dateFromUrl = searchParams.get("date");
   const [inputDate, setInputDate] = useState(dateFromUrl ?? "");
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     if (dateFromUrl) {
-      setTimeout(() => {
-        setInputDate(dateFromUrl);
-      }, 0);
+      setTimeout(() => setInputDate(dateFromUrl), 0);
     }
   }, [dateFromUrl]);
 
@@ -32,8 +33,7 @@ export default function Convocation() {
 
   return (
     <section className="space-y-8 bg-base-50 p-2 md:p-6 rounded-2xl min-h-screen">
-      
-      {/* SECTION HAUT (Cachée à l'impression) */}
+      {/* SECTION HAUT */}
       <div className="print:hidden space-y-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-extrabold tracking-tight text-base-content">
@@ -49,9 +49,7 @@ export default function Convocation() {
             value={inputDate}
             onChange={setInputDate}
             onSubmit={() => {
-              if (inputDate) {
-                router.push(`/admin/convocations?date=${inputDate}`);
-              }
+              if (inputDate) router.push(`/admin/convocations?date=${inputDate}`);
             }}
             loading={loading}
           />
@@ -68,6 +66,7 @@ export default function Convocation() {
         </div>
       </div>
 
+      {/* ERREUR */}
       {affichageError && (
         <div className="alert alert-error shadow-sm print:hidden">
           <span>{affichageError}</span>
@@ -91,10 +90,9 @@ export default function Convocation() {
         </div>
       )}
 
-      {/* RESULTATS (Zone d'impression) */}
+      {/* RESULTATS */}
       {affichageData && !loading && (
         <div className="bg-white md:p-10 rounded-2xl md:shadow-sm md:border border-base-200 print:shadow-none print:border-none print:p-0">
-          
           {/* HEADER PDF */}
           <div className="text-center mb-8 print:mb-12">
             <p className="text-xs md:text-sm font-semibold uppercase tracking-widest text-base-content/70 print:text-black">
@@ -105,22 +103,50 @@ export default function Convocation() {
               Convocations de permanence
             </h2>
             <p className="text-sm md:text-base mt-2 text-base-content/80 print:text-black">
-              Semaine débutant le <span className="font-semibold">{dateFromUrl}</span>
+              Semaine débutant le <span className="font-semibold">{formatDateFR(dateFromUrl ?? "")}</span>
             </p>
           </div>
 
-          {/* LISTE DES CONVOCATIONS */}
-          <div className="space-y-6 print:space-y-8">
-            {affichageData.message.map((msg, index) => (
-              <ConvocationCard key={index} message={msg} />
-            ))}
+          {/* PAGINATION A L'ECRAN */}
+          <div className="print:hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.25 }}
+              >
+                <ConvocationCard message={affichageData.message[activeIndex]} />
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="flex justify-center gap-2 mt-6 flex-wrap">
+              {affichageData.message.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveIndex(index)}
+                  className={`btn btn-sm ${
+                    activeIndex === index ? "btn-primary" : "btn-outline"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* SIGNATURE */}
-          <div className="mt-12 print:mt-16">
-            <PdfSignature titre="Le Chef de l'Académie" />
-          </div>
+          {/* MODE IMPRESSION → toutes les convocations */}
+<div className="hidden print:block space-y-6">
+  {affichageData.message.map((msg, index) => (
+    <ConvocationCard key={index} message={msg} />
+  ))}
+</div>
 
+{/* SIGNATURE → uniquement visible à l'impression */}
+<div className="hidden print:block mt-12 print:mt-16">
+  <PdfSignature titre="Le Chef de l'Académie" />
+</div>
         </div>
       )}
     </section>

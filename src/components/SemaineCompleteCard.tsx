@@ -1,60 +1,62 @@
 //src\components\SemaineCompleteCard.tsx
 import { Jours } from "@/types/jours";
+import { formatDateFR } from "@/utils/formatDate";
 
 type Props = {
-    jour: Jours;
-    mode: "officiel" | "signature";
-  };
+  jour: Jours;
+  mode: "officiel" | "signature";
+};
 
-export default function SemaineCompleteCard({jour, mode}: Props) {
-  
-    if (!jour) {
-      return <p>Aucune permanence pour ce jour.</p>;
-    }
-  
-    const membres = [
-      jour.equipe.GrandSemaine,
-      jour.equipe.GrandJour,
-      jour.equipe.ChefRegiment,
-      jour.equipe.ChefSection,
-      ...jour.equipe.Soldats,
-    ];
-    
-    const hasTemporaire = membres.some(p => p.estTemporaire);
+export default function SemaineCompleteCard({ jour, mode }: Props) {
 
-    return (
-      <section
-  className="
-  space-y-6
+  if (!jour) {
+    return <p>Aucune permanence pour ce jour.</p>;
+  }
 
-  print:break-inside-avoid
-  "
->
-        <header>
+  const membres = [
+    jour.equipe.GrandSemaine,
+    jour.equipe.GrandJour,
+    jour.equipe.ChefRegiment,
+    jour.equipe.ChefSection,
+    ...jour.equipe.Soldats,
+  ];
+
+  const hasTemporaire = membres.some((p) => p.estTemporaire);
+
+  return (
+    <section
+      className="
+      space-y-6
+      print:break-after-page
+      print:break-inside-avoid
+      "
+    >
+
+      <header>
         <h1 className="text-2xl font-bold">
-          Permanence du {jour.date}
+        Permanence du {formatDateFR(jour.date)}
         </h1>
-  
+
         <p className="text-sm text-gray-600">
-            Équipe : <span className="font-medium">{jour.equipe.nomEquipe}</span>
-          </p>
-  
-          <div className="flex flex-wrap gap-2 text-sm">
-            <span className="badge badge-neutral">
-              {membres.length} participant(s)
-            </span>
-          </div>
-        </header>
-  
-        {/* ================= INFOS ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-xl">
-          <div className="space-y-1">
-            <p className="font-semibold">Description :</p>
-            <p className="text-gray-600">
-              {jour.equipe.Description || "—"}
-            </p>
-          </div>
+          Équipe : <span className="font-medium">{jour.equipe.nomEquipe}</span>
+        </p>
+
+        <div className="flex flex-wrap gap-2 text-sm">
+          <span className="badge badge-neutral">
+            {membres.length} participant(s)
+          </span>
         </div>
+      </header>
+
+      {/* INFO */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-xl">
+        <div className="space-y-1">
+          <p className="font-semibold">Description :</p>
+          <p className="text-gray-600">
+            {jour.equipe.Description || "—"}
+          </p>
+        </div>
+      </div>
   
         {/* ================= TABLE DESKTOP ================= */}
         <div className="hidden md:block 
@@ -125,8 +127,8 @@ print:border-none">
                   <span className="badge badge-info badge-sm">{p.role}</span>
                 </td>
                 <td className="p-2 break-words whitespace-normal">{p.jourSemaine}</td>
-                <td className="p-2 break-words whitespace-normal">{p.DateDebut}</td>
-                <td className="p-2 break-words whitespace-normal">{p.DateFin}</td>
+                <td className="p-2 break-words whitespace-normal">{formatDateFR(p.DateDebut)}</td>
+                <td className="p-2 break-words whitespace-normal">{formatDateFR(p.DateFin)}</td>
                 <td className="p-2 break-words whitespace-normal">
                   {p.estWeekend ? (
                     <span className="badge badge-warning badge-sm">Oui</span>
@@ -178,8 +180,8 @@ print:border-none">
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>Début: {p.DateDebut}</span>
-              <span>Fin: {p.DateFin}</span>
+              <span>Début: {formatDateFR(p.DateDebut)}</span>
+              <span>Fin: {formatDateFR(p.DateFin)}</span>
               <span>
                 Weekend:{" "}
                 {p.estWeekend ? "Oui" : "Non"}

@@ -3,6 +3,7 @@
 
 import { useMemo, useState } from "react";
 import useIndispoPermanence from "@/hooks/useIndispoPermanence";
+import { formatDateFR } from "@/utils/formatDate";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -118,7 +119,7 @@ export default function Indisponible() {
                 <td>{p.prenom}</td>
                 <td>{p.matricule}</td>
                 <td>{p.numero}</td>
-                <td>{p.datePermanence}</td>
+                <td>{formatDateFR(p.datePermanence)}</td>
                 <td>
                   <span className="badge badge-info badge-sm">
                     {p.role}
@@ -153,7 +154,7 @@ export default function Indisponible() {
             <div className="text-xs text-gray-600 space-y-1">
               <p>Matricule : {p.matricule}</p>
               <p>Téléphone : {p.numero}</p>
-              <p>Date : {p.datePermanence}</p>
+              <p>Date : {formatDateFR(p.datePermanence)}</p>
             </div>
 
             <div className="pt-2 border-t text-xs">

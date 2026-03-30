@@ -2,6 +2,7 @@
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import { Jours } from "@/types/jours";
 import { useRouter, useSearchParams } from "next/navigation";
+import { formatDateFR } from "@/utils/formatDate";
 
 export default function PermanenceSemaineCard({ jour }: { jour: Jours }) {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function PermanenceSemaineCard({ jour }: { jour: Jours }) {
         <div className="flex items-center gap-2">
           <CalendarDaysIcon className="w-5 h-5 text-primary" />
           <h3 className="text-lg font-semibold">
-            Permanence du {jour.date}
+            Permanence du {formatDateFR(jour.date)}
           </h3>
         </div>
 
