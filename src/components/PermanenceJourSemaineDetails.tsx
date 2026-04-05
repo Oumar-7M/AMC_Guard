@@ -2,6 +2,7 @@
 "use client";
 
 import { usePermanenceSemaine } from "@/hooks/usePermanenceSemaine";
+import { PersonnelPermCourante } from "@/types/personnel";
 import { formatDateFR } from "@/utils/formatDate";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +17,7 @@ export default function PermanenceJourSemaineDetails({
 }: Props) {
 
   const router = useRouter();
-  const { permanence, loading, error } = 
+  const { permanence, loading, error } =
     usePermanenceSemaine(semaineDate);
   if (loading) return <p>Chargement...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -32,17 +33,36 @@ export default function PermanenceJourSemaineDetails({
     ...jour.equipe.Soldats,
   ];
   const hasTemporaire = membres.some(p => p.estTemporaire);
+  const getDates = (p: PersonnelPermCourante) => {
+    if (
+      p.personnel.grade?.toLowerCase() === "sentinelle" &&
+      p.HeureTravail &&
+      p.HeureTravail.length > 0
+    ) {
+      return p.HeureTravail.map((h) => ({
+        debut: h.dateDebut,
+        fin: h.dateFin,
+      }));
+    }
+
+    return [
+      {
+        debut: p.DateDebut,
+        fin: p.DateFin,
+      },
+    ];
+  };
   return (
     <section className="space-y-6">
       <header>
         <p className="text-xs uppercase tracking-wider">
           Académie — Militaire — Cherchell
         </p>
-      <h1 className="text-2xl font-bold">
-        Permanence du {formatDateFR(jour.date)}
-      </h1>
+        <h1 className="text-2xl font-bold">
+          Permanence du {formatDateFR(jour.date)}
+        </h1>
 
-      <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600">
           Équipe : <span className="font-medium">{jour.equipe.nomEquipe}</span>
         </p>
 
@@ -75,7 +95,7 @@ export default function PermanenceJourSemaineDetails({
         <table className="table table-zebra w-full text-sm">
           <thead className="bg-gray-100">
             <tr>
-            <th>Nom</th>
+              <th>Nom</th>
               <th>Prénom</th>
               <th>Matricule</th>
               <th>Grade</th>
@@ -111,8 +131,16 @@ export default function PermanenceJourSemaineDetails({
                   <span className="badge badge-info badge-sm">{p.role}</span>
                 </td>
                 <td>{p.jourSemaine}</td>
-                <td>{formatDateFR(p.DateDebut)}</td>
-                <td>{formatDateFR(p.DateFin)}</td>
+                <td>
+                  {getDates(p).map((d, i) => (
+                    <div key={i}>{formatDateFR(d.debut)}</div>
+                  ))}
+                </td>
+                <td>
+                  {getDates(p).map((d, i) => (
+                    <div key={i}>{formatDateFR(d.fin)}</div>
+                  ))}
+                </td>
                 <td>
                   {p.estWeekend ? (
                     <span className="badge badge-warning badge-sm">Oui</span>
@@ -155,14 +183,25 @@ export default function PermanenceJourSemaineDetails({
             </div>
 
             <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600">
-            <span>Matricule: {p.personnel.Matricule}</span>
+              <span>Matricule: {p.personnel.Matricule}</span>
               <span>Grade: {p.personnel.grade}</span>
               <span>Fonction: {p.personnel.Fonction}</span>
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>Début: {formatDateFR(p.DateDebut)}</span>
-              <span>Fin: {formatDateFR(p.DateFin)}</span>
+              <span>
+                Début:
+                {getDates(p).map((d, i) => (
+                  <div key={i}>{formatDateFR(d.debut)}</div>
+                ))}
+              </span>
+
+              <span>
+                Fin:
+                {getDates(p).map((d, i) => (
+                  <div key={i}>{formatDateFR(d.fin)}</div>
+                ))}
+              </span>
               <span>
                 Weekend:{" "}
                 {p.estWeekend ? "Oui" : "Non"}
@@ -188,12 +227,12 @@ export default function PermanenceJourSemaineDetails({
           Télécharger PDF
         </button>
 
-      <button
-        onClick={() => router.back()}
-        className="btn btn-neutral"
-      >
-        ← Retour
-      </button>
+        <button
+          onClick={() => router.back()}
+          className="btn btn-neutral"
+        >
+          ← Retour
+        </button>
       </div>
     </section>
   );

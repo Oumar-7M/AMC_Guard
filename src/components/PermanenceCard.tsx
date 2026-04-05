@@ -2,6 +2,7 @@
 "use client";
 
 import { PermanenceEnCour } from "@/types/permanence";
+import { PersonnelPermCourante } from "@/types/personnel";
 import { formatDateFR } from "@/utils/formatDate";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 
@@ -12,17 +13,35 @@ type Props = {
 export default function PermanenceCard({ permanence }: Props) {
 
   const membres = permanence
-  ? [
+    ? [
       permanence.jours.equipe.GrandSemaine,
       permanence.jours.equipe.GrandJour,
       permanence.jours.equipe.ChefRegiment,
       permanence.jours.equipe.ChefSection,
       ...permanence.jours.equipe.Soldats,
     ].filter(Boolean) // 👈 supprime null / undefined
-  : [];
+    : [];
 
   const hasTemporaire = membres.some(p => p.estTemporaire);
+  const getDates = (p: PersonnelPermCourante) => {
+    if (
+      p.personnel.grade?.toLowerCase() === "sentinelle" &&
+      p.HeureTravail &&
+      p.HeureTravail.length > 0
+    ) {
+      return p.HeureTravail.map((h) => ({
+        debut: h.dateDebut,
+        fin: h.dateFin,
+      }));
+    }
 
+    return [
+      {
+        debut: p.DateDebut,
+        fin: p.DateFin,
+      },
+    ];
+  };
   return (
     <section className="
   w-full 
@@ -43,9 +62,9 @@ export default function PermanenceCard({ permanence }: Props) {
       <header className="relative border-b pb-4 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-          <p className="text-xs uppercase tracking-wider">
-          Académie — Militaire — Cherchell
-        </p>
+            <p className="text-xs uppercase tracking-wider">
+              Académie — Militaire — Cherchell
+            </p>
             <h2 className="text-xl font-bold">Permanence Courante</h2>
             <p className="text-sm text-gray-500">
               Équipe : <span className="font-medium">{permanence.jours.equipe.nomEquipe}</span>
@@ -55,7 +74,7 @@ export default function PermanenceCard({ permanence }: Props) {
           <div className="flex flex-wrap gap-2 text-sm">
 
             <span className="badge badge-outline"><CalendarDaysIcon className="w-5 h-5 text-primary" />
-            {formatDateFR(permanence.jours.date)}
+              {formatDateFR(permanence.jours.date)}
             </span>
           </div>
         </div>
@@ -130,8 +149,16 @@ export default function PermanenceCard({ permanence }: Props) {
                   <span className="badge badge-info badge-sm">{p.role}</span>
                 </td>
                 <td>{p.jourSemaine}</td>
-                <td>{formatDateFR(p.DateDebut)}</td>
-                <td>{formatDateFR(p.DateFin)}</td>
+                <td>
+                  {getDates(p).map((d, i) => (
+                    <div key={i}>{formatDateFR(d.debut)}</div>
+                  ))}
+                </td>
+                <td>
+                  {getDates(p).map((d, i) => (
+                    <div key={i}>{formatDateFR(d.fin)}</div>
+                  ))}
+                </td>
                 <td>
                   {p.estWeekend ? (
                     <span className="badge badge-warning badge-sm">Oui</span>
@@ -180,8 +207,19 @@ export default function PermanenceCard({ permanence }: Props) {
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>Début: {formatDateFR(p.DateDebut)}</span>
-              <span>Fin: {formatDateFR(p.DateFin)}</span>
+              <span>
+                Début:
+                {getDates(p).map((d, i) => (
+                  <div key={i}>{formatDateFR(d.debut)}</div>
+                ))}
+              </span>
+
+              <span>
+                Fin:
+                {getDates(p).map((d, i) => (
+                  <div key={i}>{formatDateFR(d.fin)}</div>
+                ))}
+              </span>
               <span>
                 Weekend:{" "}
                 {p.estWeekend ? "Oui" : "Non"}

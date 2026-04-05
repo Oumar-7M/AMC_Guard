@@ -14,8 +14,10 @@ interface PersonnelEtInfo {
   Arme: string;
   Fonction: string;
   numero: string;
-  DateDebut: string;
-  DateFin: string;
+  dates: {
+    debut: string;
+    fin: string;
+  }[];
 }
 
 interface PersonnelParGradeEtInfo {
@@ -151,14 +153,21 @@ export default function PersonnelSemaine({
                     <span className="font-semibold block text-xs uppercase text-slate-400">Téléphone</span> {p.numero}
                   </p>
                 </div>
-
                 <div className="flex justify-between text-xs font-mono">
-                  <div className="bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100">
-                    <span className="font-bold">Début:</span> {formatDateFR(p.DateDebut)}
-                  </div>
-                  <div className="bg-red-50 text-red-700 px-2 py-1 rounded border border-red-100">
-                    <span className="font-bold">Fin:</span> {formatDateFR(p.DateFin)}
-                  </div>
+                  {p.dates.map((d, i) => (
+                    <div key={i} className="flex justify-between">
+                      <div className="bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100">
+                      <span className="font-bold">
+                        {formatDateFR(d.debut)}
+                      </span>
+                      </div>
+                      <div className="bg-red-50 text-red-700 px-2 py-1 rounded border border-red-100">
+                      <span className="font-bold">
+                        {formatDateFR(d.fin)}
+                      </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
@@ -216,9 +225,8 @@ function GradeTable({ grade, personnes }: { grade: string; personnes: PersonnelE
           {personnes.map((p, index) => (
             <tr
               key={p.Matricule}
-              className={`hover:bg-slate-50 transition-colors print:break-inside-avoid ${
-                index % 2 === 0 ? "bg-white" : "bg-slate-50/50 print:bg-transparent"
-              }`}
+              className={`hover:bg-slate-50 transition-colors print:break-inside-avoid ${index % 2 === 0 ? "bg-white" : "bg-slate-50/50 print:bg-transparent"
+                }`}
             >
               <td className="border border-slate-300 print:border-black px-3 py-2 font-bold uppercase">{p.Nom}</td>
               <td className="border border-slate-300 print:border-black px-3 py-2 capitalize">{p.Prenom}</td>
@@ -227,10 +235,14 @@ function GradeTable({ grade, personnes }: { grade: string; personnes: PersonnelE
               <td className="border border-slate-300 print:border-black px-3 py-2 text-xs">{p.Fonction}</td>
               <td className="border border-slate-300 print:border-black px-3 py-2 text-center font-mono tracking-tight">{p.numero}</td>
               <td className="border border-slate-300 print:border-black px-3 py-2 text-center font-mono bg-green-50/30 print:bg-transparent">
-                {formatDateFR(p.DateDebut)}
+                {p.dates.map((d, i) => (
+                  <div key={i}>{formatDateFR(d.debut)}</div>
+                ))}
               </td>
               <td className="border border-slate-300 print:border-black px-3 py-2 text-center font-mono bg-red-50/30 print:bg-transparent">
-                {formatDateFR(p.DateFin)}
+                {p.dates.map((d, i) => (
+                  <div key={i}>{formatDateFR(d.fin)}</div>
+                ))}
               </td>
             </tr>
           ))}

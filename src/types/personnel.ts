@@ -40,6 +40,12 @@ export interface PersonnelPermCourante {
     prenomDuRemplace: string;
     matriculeDuRemplace: string;
 
+    HeureTravail?: ChangementSentinelle[]; // 👈 AJOUT
+}
+
+export interface ChangementSentinelle {
+    dateDebut: string;
+    dateFin: string;
 }
 
 export interface PersonnelIndispo {

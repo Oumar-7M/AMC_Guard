@@ -7,7 +7,7 @@ import DateSearchWithSubmit from "../user-interface/DateSearchWithSubmit";
 
 const motifs = [
   "Malade",
-  "Congés",
+  "Décès",
 ];
 
 export default function PermanenceManager(
@@ -151,7 +151,8 @@ export default function PermanenceManager(
           onChange={(e) => setMatriculeIndispo(e.target.value)}
           placeholder="Matricule indisponible"
         />
-        {/* ROLE SELECT */}
+
+        {/* Motif SELECT */}
       <select
         value={motifIndispo}
         onChange={(e) => setMotifIndispo(e.target.value)}
@@ -165,7 +166,7 @@ export default function PermanenceManager(
           </option>
         ))}
       </select>
-
+      
         <button
           className="btn btn-warning w-full"
           onClick={handleReplace}

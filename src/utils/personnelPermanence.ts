@@ -1,6 +1,11 @@
 //src\utils\personnelPermanence.ts
 import { PermanenceSemaine } from "@/types/permanence";
 
+export interface DatePlage {
+  debut: string;
+  fin: string;
+}
+
 export interface PersonnelEtInfo {
   grade: string;
   Nom: string;
@@ -9,15 +14,15 @@ export interface PersonnelEtInfo {
   Arme: string;
   Fonction: string;
   numero: string;
-  DateDebut: string;
-  DateFin: string;
+
+  dates: DatePlage[]; // 👈 IMPORTANT
 }
 
 export interface PersonnelParGradeEtInfo {
   [grade: string]: PersonnelEtInfo[];
 }
 
-// Ordre militaire (du plus haut au plus bas)
+// Ordre militaire
 export const ordreMilitaire = [
   "colonel",
   "lieutenant-colonel",
@@ -29,29 +34,27 @@ export const ordreMilitaire = [
   "caporal",
   "soldat",
 ];
-// Normalise un grade (anti bug casse / espace / tiret)
+
+// Normalisation
 export function normalizeGrade(grade: string): string {
-  return grade
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-"); // remplace espaces par tiret
+  return grade.toLowerCase().trim().replace(/\s+/g, "-");
 }
 
-// Map de priorité
+// Priorité
 export const gradePriority = new Map(
   ordreMilitaire.map((grade, index) => [grade, index])
 );
 
-// Fonction sûre
 export function getGradeOrder(grade: string): number {
   const normalized = normalizeGrade(grade);
   return gradePriority.get(normalized) ?? 999;
 }
+
+// 🔥 FONCTION PRINCIPALE CORRIGÉE
 export function grouperPersonnelsParGradeGlobal(
   semaine: PermanenceSemaine
 ): PersonnelParGradeEtInfo {
 
-  // Map par grade → Map par matricule (anti-doublons)
   const temp: Record<string, Map<string, PersonnelEtInfo>> = {};
 
   semaine.jours.forEach(jour => {
@@ -75,8 +78,25 @@ export function grouperPersonnelsParGradeGlobal(
         temp[grade] = new Map();
       }
 
-      // Si déjà présent → on ignore (suppression des doublons)
       if (temp[grade].has(matricule)) return;
+
+      // ✅ LOGIQUE SENTINELLE
+      const isSentinelle =
+        p.grade?.toLowerCase() === "sentinelle" &&
+        persPerm.HeureTravail &&
+        persPerm.HeureTravail.length > 0;
+
+      const dates = isSentinelle
+        ? persPerm.HeureTravail!.map(h => ({
+            debut: h.dateDebut,
+            fin: h.dateFin,
+          }))
+        : [
+            {
+              debut: persPerm.DateDebut,
+              fin: persPerm.DateFin,
+            },
+          ];
 
       temp[grade].set(matricule, {
         grade,
@@ -86,13 +106,11 @@ export function grouperPersonnelsParGradeGlobal(
         Arme: p.Arme,
         Fonction: p.Fonction,
         numero: p.numero,
-        DateDebut: persPerm.DateDebut,
-        DateFin: persPerm.DateFin,
+        dates,
       });
     });
   });
 
-  // Transformation Map → Array + tri par ancienneté
   const personnelsParGrade: PersonnelParGradeEtInfo = {};
 
   Object.keys(temp).forEach(grade => {
@@ -102,7 +120,6 @@ export function grouperPersonnelsParGradeGlobal(
       );
   });
 
-  // Respect de l’ordre militaire
   const result: PersonnelParGradeEtInfo = {};
 
   ordreMilitaire.forEach(grade => {
@@ -111,7 +128,6 @@ export function grouperPersonnelsParGradeGlobal(
     }
   });
 
-  // Grades non listés → ajoutés à la fin
   Object.keys(personnelsParGrade).forEach(grade => {
     if (!result[grade]) {
       result[grade] = personnelsParGrade[grade];
