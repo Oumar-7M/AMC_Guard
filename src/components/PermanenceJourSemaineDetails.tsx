@@ -34,14 +34,12 @@ export default function PermanenceJourSemaineDetails({
   ];
   const hasTemporaire = membres.some(p => p.estTemporaire);
   const getDates = (p: PersonnelPermCourante) => {
-    if (
-      p.personnel.grade?.toLowerCase() === "sentinelle" &&
-      p.HeureTravail &&
-      p.HeureTravail.length > 0
-    ) {
+    if (p.HeureTravail && p.HeureTravail.length > 0) {
       return p.HeureTravail.map((h) => ({
         debut: h.dateDebut,
         fin: h.dateFin,
+        // Formatage combiné pour affichage clair
+        affiche: `${formatDateFR(h.dateDebut)} → ${formatDateFR(h.dateFin)}`,
       }));
     }
 
@@ -49,6 +47,7 @@ export default function PermanenceJourSemaineDetails({
       {
         debut: p.DateDebut,
         fin: p.DateFin,
+        affiche: `${formatDateFR(p.DateDebut)} → ${formatDateFR(p.DateFin)}`,
       },
     ];
   };
@@ -104,8 +103,7 @@ export default function PermanenceJourSemaineDetails({
               <th>Téléphone</th>
               <th>Rôle</th>
               <th>Jour</th>
-              <th>Début</th>
-              <th>Fin</th>
+              <th>Horaires</th>
               <th>Weekend</th>
               {hasTemporaire && (
                 <>
@@ -133,12 +131,9 @@ export default function PermanenceJourSemaineDetails({
                 <td>{p.jourSemaine}</td>
                 <td>
                   {getDates(p).map((d, i) => (
-                    <div key={i}>{formatDateFR(d.debut)}</div>
-                  ))}
-                </td>
-                <td>
-                  {getDates(p).map((d, i) => (
-                    <div key={i}>{formatDateFR(d.fin)}</div>
+                    <div key={i} className="text-xs">
+                      {d.affiche}
+                    </div>
                   ))}
                 </td>
                 <td>
@@ -189,17 +184,12 @@ export default function PermanenceJourSemaineDetails({
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>
-                Début:
+              <span className="col-span-2">
+                Horaires:
                 {getDates(p).map((d, i) => (
-                  <div key={i}>{formatDateFR(d.debut)}</div>
-                ))}
-              </span>
-
-              <span>
-                Fin:
-                {getDates(p).map((d, i) => (
-                  <div key={i}>{formatDateFR(d.fin)}</div>
+                  <div key={i} className="text-xs">
+                    {d.affiche}
+                  </div>
                 ))}
               </span>
               <span>

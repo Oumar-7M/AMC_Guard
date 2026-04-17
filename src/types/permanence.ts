@@ -1,6 +1,7 @@
 //src/types/permanence.ts
 import { EquipePermanenceCheck } from "./equipePermanence";
 import { Jours } from "./jours";
+import { ChangementSentinelle } from "./personnel";
 
 export interface PermanenceCheck {
     date: string;         
@@ -11,6 +12,7 @@ export interface PermanenceCheck {
     role: string;
     estTemporaire: boolean;
     nomRemplace: string;
+    horaire?: ChangementSentinelle[];
   }
 
   export interface PermanenceEnCour {

@@ -11,7 +11,7 @@ export default function Protected({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
-      router.replace("/sign-in");
+      router.replace("/");
     }
   }, [loading, isLoggedIn, router]);
 

@@ -1,4 +1,3 @@
-//src\utils\personnelPermanence.ts
 import { PermanenceSemaine } from "@/types/permanence";
 
 export interface DatePlage {
@@ -14,8 +13,7 @@ export interface PersonnelEtInfo {
   Arme: string;
   Fonction: string;
   numero: string;
-
-  dates: DatePlage[]; // 👈 IMPORTANT
+  dates: DatePlage[];
 }
 
 export interface PersonnelParGradeEtInfo {
@@ -35,29 +33,26 @@ export const ordreMilitaire = [
   "soldat",
 ];
 
-// Normalisation
 export function normalizeGrade(grade: string): string {
   return grade.toLowerCase().trim().replace(/\s+/g, "-");
 }
 
-// Priorité
 export const gradePriority = new Map(
-  ordreMilitaire.map((grade, index) => [grade, index])
+  ordreMilitaire.map((g, i) => [g, i])
 );
 
 export function getGradeOrder(grade: string): number {
-  const normalized = normalizeGrade(grade);
-  return gradePriority.get(normalized) ?? 999;
+  return gradePriority.get(normalizeGrade(grade)) ?? 999;
 }
 
-// 🔥 FONCTION PRINCIPALE CORRIGÉE
+// 🔥 FONCTION PRINCIPALE CLEAN
 export function grouperPersonnelsParGradeGlobal(
   semaine: PermanenceSemaine
 ): PersonnelParGradeEtInfo {
 
   const temp: Record<string, Map<string, PersonnelEtInfo>> = {};
 
-  semaine.jours.forEach(jour => {
+  semaine.jours.forEach((jour) => {
     const e = jour.equipe;
 
     [
@@ -65,10 +60,9 @@ export function grouperPersonnelsParGradeGlobal(
       e.GrandJour,
       e.ChefRegiment,
       e.ChefSection,
-      ...e.Soldats
-    ].forEach(persPerm => {
-
-      if (!persPerm || !persPerm.personnel) return;
+      ...e.Soldats,
+    ].forEach((persPerm) => {
+      if (!persPerm?.personnel) return;
 
       const p = persPerm.personnel;
       const grade = p.grade;
@@ -78,16 +72,13 @@ export function grouperPersonnelsParGradeGlobal(
         temp[grade] = new Map();
       }
 
-      if (temp[grade].has(matricule)) return;
+      // ✅ SAFE HeureTravail
+      const heureTravail = persPerm.HeureTravail ?? [];
 
-      // ✅ LOGIQUE SENTINELLE
-      const isSentinelle =
-        p.grade?.toLowerCase() === "sentinelle" &&
-        persPerm.HeureTravail &&
-        persPerm.HeureTravail.length > 0;
+      const isSentinelle = heureTravail.length > 0;
 
-      const dates = isSentinelle
-        ? persPerm.HeureTravail!.map(h => ({
+      const newDates: DatePlage[] = isSentinelle
+        ? heureTravail.map((h) => ({
             debut: h.dateDebut,
             fin: h.dateFin,
           }))
@@ -98,37 +89,55 @@ export function grouperPersonnelsParGradeGlobal(
             },
           ];
 
-      temp[grade].set(matricule, {
-        grade,
-        Nom: p.Nom,
-        Prenom: p.Prenom,
-        Matricule: matricule,
-        Arme: p.Arme,
-        Fonction: p.Fonction,
-        numero: p.numero,
-        dates,
-      });
+      // 🔥 EXISTE DÉJÀ → fusion
+      if (temp[grade].has(matricule)) {
+        const existing = temp[grade].get(matricule)!;
+
+        newDates.forEach((nd) => {
+          const exists = existing.dates.some(
+            (d) => d.debut === nd.debut && d.fin === nd.fin
+          );
+
+          if (!exists) {
+            existing.dates.push(nd);
+          }
+        });
+      }
+
+      // 🔥 NOUVEAU → création
+      else {
+        temp[grade].set(matricule, {
+          grade,
+          Nom: p.Nom,
+          Prenom: p.Prenom,
+          Matricule: matricule,
+          Arme: p.Arme,
+          Fonction: p.Fonction,
+          numero: p.numero,
+          dates: newDates,
+        });
+      }
     });
   });
 
   const personnelsParGrade: PersonnelParGradeEtInfo = {};
 
-  Object.keys(temp).forEach(grade => {
-    personnelsParGrade[grade] = Array.from(temp[grade].values())
-      .sort((a, b) =>
+  Object.keys(temp).forEach((grade) => {
+    personnelsParGrade[grade] = Array.from(temp[grade].values()).sort(
+      (a, b) =>
         a.Matricule.localeCompare(b.Matricule, "fr", { numeric: true })
-      );
+    );
   });
 
   const result: PersonnelParGradeEtInfo = {};
 
-  ordreMilitaire.forEach(grade => {
+  ordreMilitaire.forEach((grade) => {
     if (personnelsParGrade[grade]) {
       result[grade] = personnelsParGrade[grade];
     }
   });
 
-  Object.keys(personnelsParGrade).forEach(grade => {
+  Object.keys(personnelsParGrade).forEach((grade) => {
     if (!result[grade]) {
       result[grade] = personnelsParGrade[grade];
     }

@@ -24,14 +24,12 @@ export default function PermanenceCard({ permanence }: Props) {
 
   const hasTemporaire = membres.some(p => p.estTemporaire);
   const getDates = (p: PersonnelPermCourante) => {
-    if (
-      p.personnel.grade?.toLowerCase() === "sentinelle" &&
-      p.HeureTravail &&
-      p.HeureTravail.length > 0
-    ) {
+    if (p.HeureTravail && p.HeureTravail.length > 0) {
       return p.HeureTravail.map((h) => ({
         debut: h.dateDebut,
         fin: h.dateFin,
+        // Formatage combiné pour affichage clair
+        affiche: `${formatDateFR(h.dateDebut)} → ${formatDateFR(h.dateFin)}`,
       }));
     }
 
@@ -39,6 +37,7 @@ export default function PermanenceCard({ permanence }: Props) {
       {
         debut: p.DateDebut,
         fin: p.DateFin,
+        affiche: `${formatDateFR(p.DateDebut)} → ${formatDateFR(p.DateFin)}`,
       },
     ];
   };
@@ -110,8 +109,8 @@ export default function PermanenceCard({ permanence }: Props) {
   print:rounded-none
   print:border-none
 ">
-        <table className="table table-zebra w-full text-sm">
-          <thead className="bg-gray-100">
+        <table className="table table-zebra w-full text-xs">
+          <thead className="bg-gray-100 text-xs font-bold">
             <tr>
               <th>Nom</th>
               <th>Prénom</th>
@@ -122,8 +121,7 @@ export default function PermanenceCard({ permanence }: Props) {
               <th>Téléphone</th>
               <th>Rôle</th>
               <th>Jour</th>
-              <th>Début</th>
-              <th>Fin</th>
+              <th>Horaires</th>
               <th>Weekend</th>
               {hasTemporaire && (
                 <>
@@ -138,7 +136,7 @@ export default function PermanenceCard({ permanence }: Props) {
           <tbody>
             {membres.map(p => (
               <tr key={`${p.personnel.Matricule}-${p.personnel.Id}`}>
-                <td className="font-medium">{p.personnel.Nom}</td>
+                <td>{p.personnel.Nom}</td>
                 <td>{p.personnel.Prenom}</td>
                 <td>{p.personnel.Matricule}</td>
                 <td>{p.personnel.grade}</td>
@@ -146,18 +144,19 @@ export default function PermanenceCard({ permanence }: Props) {
                 <td>{p.personnel.Arme}</td>
                 <td>{p.personnel.numero}</td>
                 <td>
-                  <span className="badge badge-info badge-sm">{p.role}</span>
+                  <span className="badge badge-info badge-xs">{p.role}</span>
                 </td>
                 <td>{p.jourSemaine}</td>
                 <td>
-                  {getDates(p).map((d, i) => (
-                    <div key={i}>{formatDateFR(d.debut)}</div>
-                  ))}
-                </td>
-                <td>
-                  {getDates(p).map((d, i) => (
-                    <div key={i}>{formatDateFR(d.fin)}</div>
-                  ))}
+                  <div className="flex flex-col gap-1">
+                    {getDates(p).map((d, i) => (
+                      <div key={i}>
+                        <span className="whitespace-nowrap text-gray-700 text-xs ">
+                          {d.affiche}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </td>
                 <td>
                   {p.estWeekend ? (
@@ -207,17 +206,14 @@ export default function PermanenceCard({ permanence }: Props) {
               <span>Arme: {p.personnel.Arme}</span>
               <span>Tél: {p.personnel.numero}</span>
               <span>Jour: {p.jourSemaine}</span>
-              <span>
-                Début:
+              <span className="col-span-2">
+                Horaires:
                 {getDates(p).map((d, i) => (
-                  <div key={i}>{formatDateFR(d.debut)}</div>
-                ))}
-              </span>
-
-              <span>
-                Fin:
-                {getDates(p).map((d, i) => (
-                  <div key={i}>{formatDateFR(d.fin)}</div>
+                  <div key={i}>
+                    <span className="whitespace-nowrap text-xs font-medium">
+                      {d.affiche}
+                    </span>
+                  </div>
                 ))}
               </span>
               <span>
