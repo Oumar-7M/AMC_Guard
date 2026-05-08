@@ -1,5 +1,4 @@
 // src/app/page.tsx
-import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
@@ -45,19 +44,19 @@ export default function Home() {
           {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 justify-center md:justify-start">
 
-            <Link
+            <a
               href="/sign-in"
               className="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 hover:shadow-blue-500/30 transition"
             >
               Se connecter
-            </Link>
+            </a>
 
-            <Link
+            <a
               href="#features"
               className="border border-white/20 px-6 py-3 rounded-xl hover:bg-white/10 transition backdrop-blur-sm"
             >
               En savoir plus
-            </Link>
+            </a>
 
           </div>
         </div>
